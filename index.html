@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Zufälliger Ort in Europa</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    body { font-family: Arial; text-align: center; margin: 20px; }
+    #map { height: 400px; width: 90%; margin: auto; }
+    button { padding: 10px 15px; font-size: 16px; margin-bottom: 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Zufälliger Ort in Europa</h2>
+  <button onclick="getRandomLocation()">🎲 Zufälligen Ort finden</button>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([50, 10], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    let marker = null;
+
+    async function getRandomLocation() {
+      try {
+        const response = await fetch('https://eurando.onrender.com/random-location');
+        const data = await response.json();
+        const lat = data.latitude;
+        const lon = data.longitude;
+
+        if(marker) map.removeLayer(marker);
+        marker = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 6);
+      } catch(e) {
+        alert('Fehler beim Laden des Ortes');
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
