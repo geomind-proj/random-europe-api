@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zufälliger Ort in Europa</title>
+  <title>Random Europe</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
   <style>
-    /* RESET & BASICS */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -17,66 +16,104 @@
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+    }
+
+    section {
       height: 100vh;
+      scroll-snap-align: start;
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
     }
 
-    /* HEADER */
-    header {
-      padding: 12px;
+    h1 {
+      font-size: 28px;
+      font-weight: 500;
       text-align: center;
-      font-weight: 600;
-      font-size: 18px;
-      background: #ffffff;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 8px;
     }
 
-    /* MAP */
+    .highlight {
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 400;
+      opacity: 0.8;
+      margin-bottom: 24px;
+    }
+
+    .europe {
+      width: 120px;
+      margin-bottom: 32px;
+      opacity: 0.9;
+    }
+
+    button {
+      width: 100%;
+      max-width: 320px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+    }
+
+    /* MAP VIEW */
     #map {
       flex: 1;
       width: 100%;
+      border-radius: 12px;
+      margin-top: 12px;
     }
 
-    /* BUTTON AREA */
     .bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: white;
-      padding: 12px;
-      border-top: 1px solid #eee;
+      padding: 16px;
+      background: linear-gradient(to top, #000 60%, transparent);
     }
 
-    .bottom-bar button {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      background: #007aff;
-      color: white;
-      cursor: pointer;
-    }
-
-    /* Abstand für Karte, damit Button nichts überdeckt */
-    .map-spacer {
-      height: 70px;
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 
 <body>
 
-  <header>Zufälliger Ort in Europa</header>
+  <!-- INTRO -->
+  <section id="intro">
+    <h1>
+      Explore the <span class="highlight">real</span> Europe
+    </h1>
+    <h2>find truly random places.</h2>
 
-  <div id="map"></div>
-  <div class="map-spacer"></div>
+    <img src="europe-outline.svg" class="europe" alt="Europe outline" />
 
-  <div class="bottom-bar">
-    <button onclick="getRandomLocation()">🎲 Zufälligen Ort finden</button>
+    <button onclick="startExploring()">🎲 Explore a random place</button>
+  </section>
+
+  <!-- MAP VIEW -->
+  <section id="explore">
+    <h2>find truly random places.</h2>
+    <div id="map"></div>
+  </section>
+
+  <div class="bottom-bar hidden" id="bottomBar">
+    <button onclick="getRandomLocation()">🎲 Explore another place</button>
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -88,6 +125,12 @@
     }).addTo(map);
 
     let marker = null;
+
+    function startExploring() {
+      document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('bottomBar').classList.remove('hidden');
+      getRandomLocation();
+    }
 
     async function getRandomLocation() {
       const response = await fetch(
