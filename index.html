@@ -15,27 +15,37 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #000;
-      color: #fff;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-    }
+	  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	  background: #000;
+	  color: #fff;
+	  overflow-y: scroll;
+
+	  scroll-snap-type: y mandatory;
+	  overscroll-behavior: none; /* ⬅️ WICHTIG */
+	}
+
 
     section {
-      height: 100vh;
-      scroll-snap-align: start;
-      display: flex;
-      flex-direction: column;
+	  height: 100vh;
+	  scroll-snap-align: start;
+	  scroll-snap-stop: always; /* ⬅️ DAS IST DER GAMECHANGER */
+
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  padding: 24px;
+	}
+
+
+    /* INTRO */
+    #intro {
       justify-content: center;
-      align-items: center;
-      padding: 24px;
+      text-align: center;
     }
 
     h1 {
       font-size: 28px;
       font-weight: 500;
-      text-align: center;
       margin-bottom: 8px;
     }
 
@@ -51,7 +61,7 @@
     }
 
     .europe {
-      width: 120px;
+      width: 200px; /* FIX 1 */
       margin-bottom: 32px;
       opacity: 0.9;
     }
@@ -69,32 +79,27 @@
       cursor: pointer;
     }
 
-    /* MAP VIEW */
+    /* EXPLORE VIEW */
+    #explore {
+      justify-content: flex-start;
+      gap: 12px;
+    }
+
     #map {
       flex: 1;
       width: 100%;
       border-radius: 12px;
-      margin-top: 12px;
     }
 
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(to top, #000 60%, transparent);
-    }
-
-    .hidden {
-      display: none;
+    .explore-button {
+      margin-bottom: 12px;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- INTRO -->
+  <!-- PAGE 1: INTRO -->
   <section id="intro">
     <h1>
       Explore the <span class="highlight">real</span> Europe
@@ -106,15 +111,14 @@
     <button onclick="startExploring()">🎲 Explore a random place</button>
   </section>
 
-  <!-- MAP VIEW -->
+  <!-- PAGE 2: MAP -->
   <section id="explore">
     <h2>find truly random places.</h2>
     <div id="map"></div>
+    <button class="explore-button" onclick="getRandomLocation()">
+      🎲 Explore another place
+    </button>
   </section>
-
-  <div class="bottom-bar hidden" id="bottomBar">
-    <button onclick="getRandomLocation()">🎲 Explore another place</button>
-  </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
@@ -128,7 +132,6 @@
 
     function startExploring() {
       document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
-      document.getElementById('bottomBar').classList.remove('hidden');
       getRandomLocation();
     }
 
