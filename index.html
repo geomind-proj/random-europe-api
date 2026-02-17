@@ -18,12 +18,12 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background: #000;
       color: #fff;
-      overflow: hidden; /* 🔒 scroll komplett gesperrt */
+      overflow: hidden;
     }
 
     .container {
       height: 200vh;
-      transition: transform 0.8s ease;
+      transition: transform 0.9s cubic-bezier(.22,.61,.36,1);
     }
 
     .page {
@@ -54,12 +54,12 @@
       font-size: 16px;
       font-weight: 400;
       opacity: 0.8;
-      margin-bottom: 24px;
+      text-align: center;
     }
 
     .europe {
       width: 200px;
-      margin-bottom: 32px;
+      margin: 32px 0;
     }
 
     button {
@@ -77,14 +77,28 @@
 
     /* PAGE 2 */
     #explore {
-      justify-content: flex-start;
-      gap: 12px;
+      justify-content: center;
+    }
+
+    .explore-content {
+      height: 80vh;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px; /* 🔥 exakt gleichmäßige Abstände */
     }
 
     #map {
-      flex: 1;
       width: 100%;
+      max-width: 90vw;
+      max-height: 65vh;
+
+      aspect-ratio: 4 / 5;   /* 🔒 Hochformat */
       border-radius: 12px;
+      border: 2px solid #fff;
     }
   </style>
 </head>
@@ -102,34 +116,51 @@
 
       <img src="europe-outline.svg" class="europe" alt="Europe outline" />
 
-      <button onclick="startExploring()">find your hidden gem</button>
+      <button onclick="startExploring()">discover your hidden gem</button>
     </div>
 
     <!-- PAGE 2 -->
     <div class="page" id="explore">
-      <h2>find truly random places.</h2>
-      <div id="map"></div>
-      <button onclick="getRandomLocation()">🎲 Explore another place</button>
+      <div class="explore-content">
+        <h2>find truly random places.</h2>
+        <div id="map"></div>
+        <button onclick="getRandomLocation()">keep discovering</button>
+      </div>
     </div>
 
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
+    let map;
+    let marker;
     let mapInitialized = false;
-    let marker = null;
+
+    const emojiIcon = L.divIcon({
+      html: '<span style="font-size:36px; line-height:1">📍</span>',
+      className: '',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36]
+    });
 
     function startExploring() {
       document.getElementById('container').style.transform = 'translateY(-100vh)';
       if (!mapInitialized) initMap();
       getRandomLocation();
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 400);
     }
 
     function initMap() {
-      map = L.map('map').setView([50, 10], 4);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-      }).addTo(map);
+      map = L.map('map', { zoomControl: false }).setView([50, 10], 4);
+
+      L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { attribution: '© OpenStreetMap' }
+      ).addTo(map);
+
       mapInitialized = true;
     }
 
@@ -140,9 +171,23 @@
       const lat = data.latitude;
       const lon = data.longitude;
 
-      if (marker) map.removeLayer(marker);
-      marker = L.marker([lat, lon]).addTo(map);
-      map.setView([lat, lon], 6);
+      if (!marker) {
+        marker = L.marker([lat, lon], { icon: emojiIcon }).addTo(map);
+        map.setView([lat, lon], 6);
+      } else {
+        map.flyTo(marker.getLatLng(), 4, {
+          animate: true,
+          duration: 0.8
+        });
+
+        setTimeout(() => {
+          marker.setLatLng([lat, lon]);
+          map.flyTo([lat, lon], 6, {
+            animate: true,
+            duration: 1.4
+          });
+        }, 700);
+      }
     }
   </script>
 
