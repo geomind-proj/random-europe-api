@@ -1,195 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Random Europe</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Random Europe</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #000;
-      color: #fff;
-      overflow: hidden;
-    }
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+}
 
-    .container {
-      height: 200vh;
-      transition: transform 0.9s cubic-bezier(.22,.61,.36,1);
-    }
+.container {
+  height: 200vh;
+  transition: transform 0.9s cubic-bezier(.22,.61,.36,1);
+}
 
-    .page {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px;
-    }
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+}
 
-    /* PAGE 1 */
-    #intro {
-      justify-content: center;
-      text-align: center;
-    }
+/* PAGE 1 */
+#intro {
+  justify-content: center;
+  text-align: center;
+}
 
-    h1 {
-      font-size: 28px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
+h1 {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
 
-    .highlight {
-      font-weight: 700;
-    }
+.highlight {
+  font-weight: 700;
+}
 
-    h2 {
-      font-size: 16px;
-      font-weight: 400;
-      opacity: 0.8;
-      text-align: center;
-    }
+h2 {
+  font-size: 16px;
+  font-weight: 400;
+  opacity: 0.8;
+  text-align: center;
+}
 
-    .europe {
-      width: 200px;
-      margin: 32px 0;
-    }
+.europe {
+  width: 200px;
+  margin: 32px 0;
+}
 
-    button {
-      width: 100%;
-      max-width: 320px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      background: #fff;
-      color: #000;
-      cursor: pointer;
-    }
+button {
+  width: 100%;
+  max-width: 320px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+}
 
-    /* PAGE 2 */
-    #explore {
-      justify-content: center;
-    }
+/* PAGE 2 */
+#explore {
+  justify-content: center;
+}
 
-    .explore-content {
-      height: 80vh;
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px; /* 🔥 exakt gleichmäßige Abstände */
-    }
+.explore-content {
+  height: 80vh;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
 
-    #map {
-      width: 100%;
-      max-width: 90vw;
-      max-height: 65vh;
+/* 🔒 IMMER 5:4 (Höhe × Breite) */
+#map {
+  width: 100%;
+  max-width: 90vw;
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+  border: 2px solid #fff;
+}
 
-      aspect-ratio: 4 / 5;   /* 🔒 Hochformat */
-      border-radius: 12px;
-      border: 2px solid #fff;
-    }
-  </style>
+.location-info {
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.9;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container" id="container">
+<div class="container" id="container">
 
-    <!-- PAGE 1 -->
-    <div class="page" id="intro">
-      <h1>
-        Explore the <span class="highlight">real</span> Europe
-      </h1>
-      <h2>find truly random places.</h2>
-
-      <img src="europe-outline.svg" class="europe" alt="Europe outline" />
-
-      <button onclick="startExploring()">discover your hidden gem</button>
-    </div>
-
-    <!-- PAGE 2 -->
-    <div class="page" id="explore">
-      <div class="explore-content">
-        <h2>find truly random places.</h2>
-        <div id="map"></div>
-        <button onclick="getRandomLocation()">keep discovering</button>
-      </div>
-    </div>
-
+  <!-- PAGE 1 -->
+  <div class="page" id="intro">
+    <h1>Explore the <span class="highlight">real</span> Europe</h1>
+    <h2>find truly random places.</h2>
+    <img src="europe-outline.svg" class="europe" alt="Europe outline" />
+    <button onclick="startExploring()">discover your hidden gem</button>
   </div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    let map;
-    let marker;
-    let mapInitialized = false;
+  <!-- PAGE 2 -->
+  <div class="page" id="explore">
+    <div class="explore-content">
+      <h2>find truly random places.</h2>
+      <div id="map"></div>
+      <div class="location-info" id="locationInfo">—</div>
+      <button onclick="getRandomLocation()">keep discovering</button>
+    </div>
+  </div>
 
-    const emojiIcon = L.divIcon({
-      html: '<span style="font-size:36px; line-height:1">📍</span>',
-      className: '',
-      iconSize: [36, 36],
-      iconAnchor: [18, 36]
-    });
+</div>
 
-    function startExploring() {
-      document.getElementById('container').style.transform = 'translateY(-100vh)';
-      if (!mapInitialized) initMap();
-      getRandomLocation();
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+let map, marker, mapInitialized = false;
 
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 400);
-    }
+const emojiIcon = L.divIcon({
+  html: '<span style="font-size:36px">📍</span>',
+  className: '',
+  iconSize: [36, 36],
+  iconAnchor: [18, 36]
+});
 
-    function initMap() {
-      map = L.map('map', { zoomControl: false }).setView([50, 10], 4);
+function startExploring() {
+  document.getElementById('container').style.transform = 'translateY(-100vh)';
+  if (!mapInitialized) initMap();
+  getRandomLocation();
+  setTimeout(() => map.invalidateSize(), 400);
+}
 
-      L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        { attribution: '© OpenStreetMap' }
-      ).addTo(map);
+function initMap() {
+  map = L.map('map', { zoomControl: false }).setView([50, 10], 4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  mapInitialized = true;
+}
 
-      mapInitialized = true;
-    }
+function toDMS(deg, type) {
+  const abs = Math.abs(deg);
+  const d = Math.floor(abs);
+  const m = Math.floor((abs - d) * 60);
+  const s = (((abs - d) * 60 - m) * 60).toFixed(1);
+  const dir =
+    type === 'lat'
+      ? deg >= 0 ? 'N' : 'S'
+      : deg >= 0 ? 'E' : 'W';
+  return `${d}° ${m}′ ${s}″ ${dir}`;
+}
 
-    async function getRandomLocation() {
-      const response = await fetch('https://eurando.onrender.com/random-location');
-      const data = await response.json();
+async function reverseGeocode(lat, lon) {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+  const res = await fetch(url, { headers: { 'User-Agent': 'RandomEuropeApp' }});
+  const data = await res.json();
 
-      const lat = data.latitude;
-      const lon = data.longitude;
+  const a = data.address || {};
+  const place =
+    a.village || a.town || a.city || a.hamlet || a.county || a.state || 'Remote area';
+  const country = a.country || '';
+  const code = a.country_code ? a.country_code.toUpperCase() : '';
+  const flag = code
+    ? String.fromCodePoint(...[...code].map(c => 127397 + c.charCodeAt()))
+    : '';
 
-      if (!marker) {
-        marker = L.marker([lat, lon], { icon: emojiIcon }).addTo(map);
-        map.setView([lat, lon], 6);
-      } else {
-        map.flyTo(marker.getLatLng(), 4, {
-          animate: true,
-          duration: 0.8
-        });
+  return `${place}, ${country} ${flag}`;
+}
 
-        setTimeout(() => {
-          marker.setLatLng([lat, lon]);
-          map.flyTo([lat, lon], 6, {
-            animate: true,
-            duration: 1.4
-          });
-        }, 700);
-      }
-    }
-  </script>
+async function getRandomLocation() {
+  const res = await fetch('https://eurando.onrender.com/random-location');
+  const { latitude: lat, longitude: lon } = await res.json();
+
+  if (!marker) {
+    marker = L.marker([lat, lon], { icon: emojiIcon }).addTo(map);
+    map.setView([lat, lon], 6);
+  } else {
+    map.flyTo(marker.getLatLng(), 4, { duration: 0.8 });
+    setTimeout(() => {
+      marker.setLatLng([lat, lon]);
+      map.flyTo([lat, lon], 6, { duration: 1.4 });
+    }, 700);
+  }
+
+  const coords =
+    `${toDMS(lat, 'lat')} · ${toDMS(lon, 'lon')}`;
+  const place = await reverseGeocode(lat, lon);
+
+  document.getElementById('locationInfo').innerHTML =
+    `${coords}<br>${place}`;
+}
+</script>
 
 </body>
 </html>
