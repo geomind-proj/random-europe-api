@@ -106,31 +106,49 @@ button {
   font-size: 14px;
   opacity: 0.9;
 }
+
+.app {
+  width: 100%;
+  max-width: 420px;     /* Handy-Breite */
+  height: 100vh;
+  margin: 0 auto;       /* zentriert auf Desktop */
+  overflow: hidden;
+  background: #000;
+}
+
+@media (min-width: 768px) {
+  body {
+    background: #000;
+  }
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="container" id="container">
+<div class="app">
+  <div class="container" id="container">
 
-  <!-- PAGE 1 -->
-  <div class="page" id="intro">
-    <h1>Explore the <span class="highlight">real</span> Europe</h1>
-    <h2>find truly random places :)</h2>
-    <img src="europe-outline.svg" class="europe" alt="Europe outline" />
-    <button onclick="startExploring()">discover your hidden gem</button>
+	  <!-- PAGE 1 -->
+	  <div class="page" id="intro">
+		<h1>Explore the <span class="highlight">real</span> Europe</h1>
+		<h2>find truly random places :)</h2>
+		<img src="europe-outline.svg" class="europe" alt="Europe outline" />
+		<button onclick="startExploring()">discover your hidden gem</button>
+	  </div>
+
+	  <!-- PAGE 2 -->
+	  <div class="page" id="explore">
+		<div class="explore-content">
+		  <h2>find truly random places.</h2>
+		  <div id="map"></div>
+		  <div class="location-info" id="locationInfo">—</div>
+		  <button onclick="getRandomLocation()">keep discovering</button>
+		</div>
+	  </div>
+
   </div>
-
-  <!-- PAGE 2 -->
-  <div class="page" id="explore">
-    <div class="explore-content">
-      <h2>find truly random places.</h2>
-      <div id="map"></div>
-      <div class="location-info" id="locationInfo">—</div>
-      <button onclick="getRandomLocation()">keep discovering</button>
-    </div>
-  </div>
-
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
