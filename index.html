@@ -8,11 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -21,34 +17,50 @@ body {
   overflow: hidden;
 }
 
+.app {
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  margin: 0 auto;
+  background: #000;
+  overflow: hidden;
+}
+
 .container {
-  height: 200vh;
+  height: 300vh;
+  transform: translateY(0);
   transition: transform 0.9s cubic-bezier(.22,.61,.36,1);
 }
+
+/* ---------- PAGE SYSTEM ---------- */
 
 .page {
   height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 24px;
+  justify-content: center;
+  overflow: hidden;
 }
 
-/* PAGE 1 */
-#intro {
+.content-box {
+  height: 80vh;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  text-align: center;
+  gap: 16px;
 }
+
+/* ---------- TYPO ---------- */
 
 h1 {
   font-size: 28px;
   font-weight: 500;
-  margin-bottom: 8px;
+  text-align: center;
 }
 
-.highlight {
-  font-weight: 700;
-}
+.highlight { font-weight: 700; }
 
 h2 {
   font-size: 16px;
@@ -57,174 +69,243 @@ h2 {
   text-align: center;
 }
 
-.europe {
-  width: 200px;
-  margin: 32px 0;
+.small {
+  font-size: 13px;
+  opacity: 0.7;
+  text-align: center;
 }
+
+/* ---------- BUTTONS ---------- */
 
 button {
   width: 100%;
-  max-width: 320px;
   padding: 14px;
   font-size: 16px;
   font-weight: 600;
-  border: none;
   border-radius: 10px;
-  background: #fff;
-  color: #000;
+  border: none;
   cursor: pointer;
 }
 
-/* PAGE 2 */
-#explore {
-  justify-content: center;
+.primary { background: #fff; color: #000; }
+.secondary { background: #2a2a2a; color: #aaa; }
+
+.dual {
+  display: flex;
+  gap: 12px;
 }
 
-.explore-content {
-  height: 80vh;
-  width: 100%;
-  max-width: 900px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
+.square {
+  width: 52px;
+  aspect-ratio: 1 / 1;
 }
+
+.fill { flex: 1; }
+
+/* ---------- PAGE 1 ---------- */
+
+.europe {
+  width: 200px;
+  margin: 32px auto;
+}
+
+/* ---------- PAGE 2 ---------- */
+
+
 
 #map {
+  flex: 1;
   width: 100%;
-  max-width: 90vw;
-  max-height: 65vh;
-
-  aspect-ratio: 4 / 5;   /* 🔒 Hochformat */
   border-radius: 12px;
   border: 2px solid #fff;
 }
 
-.location-info {
+.location-btn {
+  background: #111;
+  color: #fff;
   text-align: center;
+}
+
+.location-btn span {
+  display: block;
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* ---------- PAGE 3 ---------- */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.box {
+  background: #111;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.box ul {
+  list-style: none;
   font-size: 14px;
-  opacity: 0.9;
+  line-height: 1.6;
 }
-
-.app {
-  width: 100%;
-  max-width: 420px;     /* Handy-Breite */
-  height: 100vh;
-  margin: 0 auto;       /* zentriert auf Desktop */
-  overflow: hidden;
-  background: #000;
-}
-
-@media (min-width: 768px) {
-  body {
-    background: #000;
-  }
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="app">
-  <div class="container" id="container">
+<div class="container" id="container">
 
-	  <!-- PAGE 1 -->
-	  <div class="page" id="intro">
-		<h1>Explore the <span class="highlight">real</span> Europe</h1>
-		<h2>find truly random places :)</h2>
-		<img src="europe-outline.svg" class="europe" alt="Europe outline" />
-		<button onclick="startExploring()">discover your hidden gem</button>
-	  </div>
-
-	  <!-- PAGE 2 -->
-	  <div class="page" id="explore">
-		<div class="explore-content">
-		  <h2>find truly random places.</h2>
-		  <div id="map"></div>
-		  <div class="location-info" id="locationInfo">—</div>
-		  <button onclick="getRandomLocation()">keep discovering</button>
-		</div>
-	  </div>
-
+<!-- PAGE 1 -->
+<div class="page">
+  <div class="content-box">
+    <h1>Explore the <span class="highlight">real</span> Europe</h1>
+    <h2>find truly random places.</h2>
+    <img src="europe-outline.svg" class="europe">
+    <button class="primary" onclick="startExploring()">discover your hidden gem</button>
   </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+  <div class="content-box">
+    <h2>find truly random places.</h2>
+
+	<div id="map"></div>
+
+    <div class="small" id="coords">—</div>
+    <button class="location-btn" onclick="goToDetails()">
+      <div id="placeName">—</div>
+      <span>find out more</span>
+    </button>
+    <button class="primary" onclick="getRandomLocation()">keep discovering</button>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page">
+  <div class="content-box detail">
+    <h1 id="detailTitle">—</h1>
+    <div class="small" id="detailCoords">—</div>
+
+    <div class="box">
+      <strong>Things to do nearby</strong>
+      <ul>
+        <li>• Local experience placeholder</li>
+        <li>• Cultural highlight placeholder</li>
+        <li>• Nature / activity placeholder</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <strong>Things to do in the region</strong>
+      <ul>
+        <li>• Regional experience placeholder</li>
+        <li>• Scenic route placeholder</li>
+        <li>• Hidden gem placeholder</li>
+      </ul>
+    </div>
+
+    <button class="secondary" onclick="window.open('https://omio.com')">
+      find your way here
+    </button>
+    <button class="secondary" onclick="window.open('https://booking.com')">
+      get your accommodation
+    </button>
+
+    <div class="dual">
+      <button class="primary square" onclick="sharePlace()">↗</button>
+      <button class="primary fill" onclick="restart()">explore another place</button>
+    </div>
+  </div>
+</div>
+
+</div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-let map, marker, mapInitialized = false;
+let map, marker, currentPlace = {};
 
-const emojiIcon = L.divIcon({
+const icon = L.divIcon({
   html: '<span style="font-size:36px">📍</span>',
-  className: '',
-  iconSize: [36, 36],
-  iconAnchor: [18, 36]
+  iconSize: [36,36],
+  iconAnchor: [18,36],
+  className: ''
 });
 
 function startExploring() {
-  document.getElementById('container').style.transform = 'translateY(-100vh)';
-  if (!mapInitialized) initMap();
+  container.style.transform = 'translateY(-100vh)';
+  if (!map) initMap();
   getRandomLocation();
-  setTimeout(() => map.invalidateSize(), 400);
+  setTimeout(()=>map.invalidateSize(),300);
 }
 
 function initMap() {
-  map = L.map('map', { zoomControl: false }).setView([50, 10], 4);
+  map = L.map('map', { zoomControl:false }).setView([50,10],4);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-  mapInitialized = true;
 }
 
-function toDMS(deg, type) {
-  const abs = Math.abs(deg);
-  const d = Math.floor(abs);
-  const m = Math.floor((abs - d) * 60);
-  const s = (((abs - d) * 60 - m) * 60).toFixed(1);
-  const dir =
-    type === 'lat'
-      ? deg >= 0 ? 'N' : 'S'
-      : deg >= 0 ? 'E' : 'W';
-  return `${d}° ${m}′ ${s}″ ${dir}`;
+function toDMS(d,t){
+  const a=Math.abs(d),deg=Math.floor(a),
+  m=Math.floor((a-deg)*60),
+  s=(((a-deg)*60-m)*60).toFixed(1),
+  dir=t==='lat'?(d>=0?'N':'S'):(d>=0?'E':'W');
+  return `${deg}° ${m}′ ${s}″ ${dir}`;
 }
 
-async function reverseGeocode(lat, lon) {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'RandomEuropeApp' }});
-  const data = await res.json();
-
-  const a = data.address || {};
-  const place =
-    a.village || a.town || a.city || a.hamlet || a.county || a.state || 'Remote area';
-  const country = a.country || '';
-  const code = a.country_code ? a.country_code.toUpperCase() : '';
-  const flag = code
-    ? String.fromCodePoint(...[...code].map(c => 127397 + c.charCodeAt()))
-    : '';
-
-  return `${place}, ${country} ${flag}`;
+async function reverseGeocode(lat,lon){
+  const r=await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=en&lat=${lat}&lon=${lon}`
+  );
+  const d=await r.json(),a=d.address||{};
+  const place=a.city||a.town||a.village||a.hamlet||'Remote area';
+  const country=a.country||'';
+  const code=(a.country_code||'').toUpperCase();
+  const flag=code?String.fromCodePoint(...[...code].map(c=>127397+c.charCodeAt())):'';
+  return {place,country,flag};
 }
 
-async function getRandomLocation() {
-  const res = await fetch('https://eurando.onrender.com/random-location');
-  const { latitude: lat, longitude: lon } = await res.json();
+async function getRandomLocation(){
+  const r=await fetch('https://eurando.onrender.com/random-location');
+  const {latitude:lat,longitude:lon}=await r.json();
 
-  if (!marker) {
-    marker = L.marker([lat, lon], { icon: emojiIcon }).addTo(map);
-    map.setView([lat, lon], 6);
+  if(!marker){
+    marker=L.marker([lat,lon],{icon}).addTo(map);
+    map.setView([lat,lon],6);
   } else {
-    map.flyTo(marker.getLatLng(), 4, { duration: 0.8 });
-    setTimeout(() => {
-      marker.setLatLng([lat, lon]);
-      map.flyTo([lat, lon], 6, { duration: 1.4 });
-    }, 700);
+    marker.setLatLng([lat,lon]);
+    map.flyTo([lat,lon],6,{duration:1});
   }
 
-  const coords =
-    `${toDMS(lat, 'lat')} · ${toDMS(lon, 'lon')}`;
-  const place = await reverseGeocode(lat, lon);
+  const geo=await reverseGeocode(lat,lon);
+  currentPlace={...geo,lat,lon};
 
-  document.getElementById('locationInfo').innerHTML =
-    `${coords}<br>${place}`;
+  coords.innerText=`${toDMS(lat,'lat')} · ${toDMS(lon,'lon')}`;
+  placeName.innerText=`${geo.place}, ${geo.country} ${geo.flag}`;
+}
+
+function goToDetails(){
+  container.style.transform='translateY(-200vh)';
+  detailTitle.innerText=`${currentPlace.place}, ${currentPlace.country} ${currentPlace.flag}`;
+  detailCoords.innerText=`${toDMS(currentPlace.lat,'lat')} · ${toDMS(currentPlace.lon,'lon')}`;
+}
+
+function restart(){
+  container.style.transform='translateY(-100vh)';
+  getRandomLocation();
+}
+
+function sharePlace(){
+  navigator.share?.({
+    title: currentPlace.place,
+    text: 'Check out this place',
+    url: location.href
+  });
 }
 </script>
 
